@@ -7,7 +7,7 @@ const Record = (props) => (
     <td>{props.record.name}</td>
     <td>{props.record.position}</td>
     <td>{props.record.level}</td>
-    <td>
+    {/* <td>
       <Link className="btn btn-link" to={`/edit/${props.record._id}`}>Edit</Link> |
       <button className="btn btn-link"
         onClick={() => {
@@ -16,7 +16,7 @@ const Record = (props) => (
       >
         Delete
       </button>
-    </td>
+    </td> */}
   </tr>
 );
 
@@ -140,15 +140,14 @@ export default function RecordList() {
   </tr>
 
 </table>
-<h5>Please write a statement that is </h5>
-      
+<h3> Current submissions:</h3>
       <table className="table table-striped" style={{ marginTop: 20 }}>
         <thead>
           <tr>
             <th>Name</th>
             <th>Position</th>
             <th>Level</th>
-            <th>Action</th>
+
           </tr>
         </thead>
         <tbody>{recordList()}</tbody>
