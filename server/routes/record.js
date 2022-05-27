@@ -1,4 +1,5 @@
 const express = require("express");
+const { Configuration, OpenAIApi } = require("openai");
 
 // recordRoutes is an instance of the express router.
 // We use it to define our routes.
@@ -26,40 +27,60 @@ recordRoutes.route("/record").get(function (req, res) {
 // This section will help you get a single record by id
 recordRoutes.route("/record/:id").get(function (req, res) {
   let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId( req.params.id )};
+  let myquery = { _id: ObjectId(req.params.id) };
   db_connect
-      .collection("records")
-      .findOne(myquery, function (err, result) {
-        if (err) throw err;
-        res.json(result);
-      });
+    .collection("records")
+    .findOne(myquery, function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
 });
 
 // This section will help you create a new record.
-recordRoutes.route("/record/add").post(function (req, response) {
+recordRoutes.route("/record/add").post(async (req, response) => {
   let db_connect = dbo.getDb();
   let myobj = {
     name: req.body.name,
     position: req.body.position,
     level: req.body.level,
   };
-  db_connect.collection("records").insertOne(myobj, function (err, res) {
+  db_connect.collection("records").insertOne(myobj, async (err, res) => {
     if (err) throw err;
-    response.json(res);
+    
+
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(configuration);
+
+    const openairesponse = await openai.createCompletion("text-davinci-002", {
+      prompt: "True or False:" + myobj.position,
+      temperature: 1,
+      max_tokens: 60,
+      top_p: 0.9,
+      frequency_penalty: 0.5,
+      presence_penalty: 0,
+    });
+    // console.log(Object.keys(openairesponse));
+    // console.log(openairesponse.data)
+    console.log(res.ops)
+    response.json({...openairesponse.data, _id:res.ops[0]._id}); 
+    
   });
 });
 
-// This section will help you update a record by id.
-recordRoutes.route("/update/:id").post(function (req, response) {
+
+recordRoutes.route("/record/update/:id").post(function (req, response) {
   let db_connect = dbo.getDb();
   let myquery = { _id: ObjectId( req.params.id )};
+
   let newvalues = {
     $set: {
-      name: req.body.name,
-      position: req.body.position,
-      level: req.body.level,
+      airesponse: req.body.airesponse,
+      aicorrectness: req.body.aicorrectness
     },
   };
+  
   db_connect
     .collection("records")
     .updateOne(myquery, newvalues, function (err, res) {
@@ -68,11 +89,10 @@ recordRoutes.route("/update/:id").post(function (req, response) {
       response.json(res);
     });
 });
-
 // This section will help you delete a record
 recordRoutes.route("/:id").delete((req, response) => {
   let db_connect = dbo.getDb();
-  let myquery = { _id: ObjectId( req.params.id )};
+  let myquery = { _id: ObjectId(req.params.id) };
   db_connect.collection("records").deleteOne(myquery, function (err, obj) {
     if (err) throw err;
     console.log("1 document deleted");

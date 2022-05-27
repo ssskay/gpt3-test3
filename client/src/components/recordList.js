@@ -71,9 +71,9 @@ export default function RecordList() {
     <div>
       <h1>Welcome!</h1>
       <h4>Thank you for helping us with our study! Today we are going to play a game against an AI. </h4>
-      <h5>You will be randomly assigned three types of logical statements to write and the AI will try to guess it correctly. 
-        If you fool the AI, you get a point. Otherwise, the AI gets a point. Best of 3 wins! </h5>
-      <h5>Here are each of the categories:</h5>
+      <h5>Your task is to fool the AI with a statement. The AI will try to guess it correctly. 
+        If you fool the AI, you win! Otherwise, the AI wins. </h5>
+      <h5>There are different categories of statements you can make to fool the AI. Here are each of the categories and examples:</h5>
       <table class = 'table'>
   <tr>
     <th>Category</th>
